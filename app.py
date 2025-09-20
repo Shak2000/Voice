@@ -29,6 +29,7 @@ class QuoteRequest(BaseModel):
 
 class QuoteResponse(BaseModel):
     quotes: List[Dict[str, str]]
+    is_person: bool
 
 class TTSRequest(BaseModel):
     text: str
@@ -51,8 +52,8 @@ async def get_quotes(request: QuoteRequest):
             raise HTTPException(status_code=400, detail="Subject cannot be empty")
         
         generator = get_quotes_generator()
-        quotes = generator.generate_quotes(request.subject.strip())
-        return QuoteResponse(quotes=quotes)
+        result = generator.generate_quotes(request.subject.strip())
+        return QuoteResponse(quotes=result["quotes"], is_person=result["is_person"])
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating quotes: {str(e)}")

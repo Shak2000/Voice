@@ -32,8 +32,8 @@ class QuotesApp {
         this.hideQuotes();
 
         try {
-            const quotes = await this.fetchQuotes(subject);
-            this.displayQuotes(subject, quotes);
+            const result = await this.fetchQuotes(subject);
+            this.displayQuotes(subject, result.quotes, result.is_person);
         } catch (error) {
             this.showError(`Failed to fetch quotes: ${error.message}`);
         } finally {
@@ -56,22 +56,26 @@ class QuotesApp {
         }
 
         const data = await response.json();
-        return data.quotes;
+        return { quotes: data.quotes, is_person: data.is_person };
     }
 
-    displayQuotes(subject, quotes) {
-        this.quotesTitle.textContent = `Quotes about "${subject}"`;
+    displayQuotes(subject, quotes, is_person) {
+        if (is_person) {
+            this.quotesTitle.textContent = `Quotes by ${subject}`;
+        } else {
+            this.quotesTitle.textContent = `Quotes about "${subject}"`;
+        }
         this.quotesList.innerHTML = '';
 
         quotes.forEach((quoteData, index) => {
-            const quoteElement = this.createQuoteElement(quoteData, index);
+            const quoteElement = this.createQuoteElement(quoteData, index, is_person);
             this.quotesList.appendChild(quoteElement);
         });
 
         this.showQuotes();
     }
 
-    createQuoteElement(quoteData, index) {
+    createQuoteElement(quoteData, index, is_person) {
         const quoteDiv = document.createElement('div');
         quoteDiv.className = 'quote-item';
         quoteDiv.innerHTML = `

@@ -8,10 +8,10 @@ class QuotesGenerator:
         genai.configure(api_key=api_key)
         self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
     
-    def generate_quotes(self, subject: str) -> List[Dict[str, str]]:
+    def generate_quotes(self, subject: str) -> Dict[str, any]:
         """
         Generate quotes for a given subject using Gemini 2.5 Flash Lite
-        Returns a list of dictionaries with 'quote' and 'context' keys
+        Returns a dictionary with 'quotes' (list of quote dictionaries) and 'is_person' (boolean) keys
         """
         # First, determine if the subject is a person's name
         person_check_prompt = f"""
@@ -78,15 +78,17 @@ class QuotesGenerator:
                 if not isinstance(item, dict) or 'quote' not in item or 'context' not in item:
                     raise ValueError("Invalid quote structure")
             
-            return quotes_data
+            return {"quotes": quotes_data, "is_person": is_person}
             
         except json.JSONDecodeError as e:
             print(f"JSON decode error: {e}")
             print(f"Response text: {response_text}")
-            return self._get_fallback_quotes(subject)
+            fallback_quotes = self._get_fallback_quotes(subject)
+            return {"quotes": fallback_quotes, "is_person": is_person}
         except Exception as e:
             print(f"Error generating quotes: {e}")
-            return self._get_fallback_quotes(subject)
+            fallback_quotes = self._get_fallback_quotes(subject)
+            return {"quotes": fallback_quotes, "is_person": is_person}
     
     def _get_fallback_quotes(self, subject: str) -> List[Dict[str, str]]:
         """

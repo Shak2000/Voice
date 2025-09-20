@@ -13,20 +13,49 @@ class QuotesGenerator:
         Generate quotes for a given subject using Gemini 2.5 Flash Lite
         Returns a list of dictionaries with 'quote' and 'context' keys
         """
-        prompt = f"""
-        Generate 5 inspiring and meaningful quotes about "{subject}". 
-        For each quote, provide:
-        1. The quote itself (should be impactful and memorable)
-        2. Context about the quote (who said it, when, or what situation it relates to)
-        
-        Return the response as a JSON array where each item has this structure:
-        {{
-            "quote": "The actual quote text",
-            "context": "Context about the quote"
-        }}
-        
-        Make sure the quotes are diverse, inspiring, and directly related to the subject "{subject}".
+        # First, determine if the subject is a person's name
+        person_check_prompt = f"""
+        Determine if "{subject}" is the name of a person (famous person, historical figure, celebrity, author, etc.).
+        Respond with only "YES" if it's a person's name, or "NO" if it's not a person's name.
         """
+        
+        try:
+            person_response = self.model.generate_content(person_check_prompt)
+            is_person = person_response.text.strip().upper() == "YES"
+        except Exception:
+            # If we can't determine, assume it's not a person
+            is_person = False
+        
+        if is_person:
+            prompt = f"""
+            Generate 5 inspiring and meaningful quotes BY "{subject}" (quotes that this person actually said or wrote).
+            For each quote, provide:
+            1. The quote itself (should be impactful and memorable)
+            2. Context about when/where the quote was said or what situation it relates to
+            
+            Return the response as a JSON array where each item has this structure:
+            {{
+                "quote": "The actual quote text",
+                "context": "Context about when/where the quote was said"
+            }}
+            
+            Make sure all quotes are actually attributed to "{subject}" and are authentic quotes by this person.
+            """
+        else:
+            prompt = f"""
+            Generate 5 inspiring and meaningful quotes about "{subject}". 
+            For each quote, provide:
+            1. The quote itself (should be impactful and memorable)
+            2. Context about the quote (who said it, when, or what situation it relates to)
+            
+            Return the response as a JSON array where each item has this structure:
+            {{
+                "quote": "The actual quote text",
+                "context": "Context about the quote"
+            }}
+            
+            Make sure the quotes are diverse, inspiring, and directly related to the subject "{subject} and that they were actually spoken by someone and/or written in a document.".
+            """
         
         try:
             response = self.model.generate_content(prompt)
@@ -63,7 +92,40 @@ class QuotesGenerator:
         """
         Fallback quotes if Gemini API fails
         """
-        fallback_quotes = {
+        # Check if subject might be a person's name (simple heuristic)
+        subject_lower = subject.lower()
+        
+        # Common person names that might be searched
+        person_quotes = {
+            "einstein": [
+                {"quote": "Imagination is more important than knowledge.", "context": "Albert Einstein"},
+                {"quote": "The important thing is not to stop questioning.", "context": "Albert Einstein"},
+                {"quote": "Try not to become a person of success, but rather try to become a person of value.", "context": "Albert Einstein"}
+            ],
+            "churchill": [
+                {"quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.", "context": "Winston Churchill"},
+                {"quote": "We shall never surrender.", "context": "Winston Churchill"},
+                {"quote": "If you're going through hell, keep going.", "context": "Winston Churchill"}
+            ],
+            "jobs": [
+                {"quote": "The only way to do great work is to love what you do.", "context": "Steve Jobs"},
+                {"quote": "Stay hungry, stay foolish.", "context": "Steve Jobs"},
+                {"quote": "Innovation distinguishes between a leader and a follower.", "context": "Steve Jobs"}
+            ],
+            "disney": [
+                {"quote": "If you can dream it, you can do it.", "context": "Walt Disney"},
+                {"quote": "The way to get started is to quit talking and begin doing.", "context": "Walt Disney"},
+                {"quote": "All our dreams can come true, if we have the courage to pursue them.", "context": "Walt Disney"}
+            ]
+        }
+        
+        # Check if subject matches any person names
+        for person_name in person_quotes:
+            if person_name in subject_lower:
+                return person_quotes[person_name]
+        
+        # General topic quotes
+        topic_quotes = {
             "success": [
                 {"quote": "Success is not final, failure is not fatal: it is the courage to continue that counts.", "context": "Winston Churchill"},
                 {"quote": "The way to get started is to quit talking and begin doing.", "context": "Walt Disney"},
@@ -82,9 +144,8 @@ class QuotesGenerator:
         }
         
         # Return quotes based on subject or default to success quotes
-        subject_lower = subject.lower()
-        for key in fallback_quotes:
+        for key in topic_quotes:
             if key in subject_lower:
-                return fallback_quotes[key]
+                return topic_quotes[key]
         
-        return fallback_quotes["success"]
+        return topic_quotes["success"]

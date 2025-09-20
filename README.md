@@ -4,8 +4,9 @@ A client-server application that generates inspiring quotes on any subject using
 
 ## Features
 
-- **Quote Generation**: Enter any subject and get 5 inspiring quotes with context
-- **Text-to-Speech**: Click the "Play" button to hear quotes read aloud
+- **Smart Quote Generation**: Enter any subject and get 5 inspiring quotes with context
+- **Person Detection**: Automatically detects if the subject is a person's name and returns quotes BY that person rather than ABOUT them
+- **Text-to-Speech**: Click the "Play" button to hear quotes read aloud using Gemini 2.5 Flash Preview TTS
 - **Modern UI**: Beautiful, responsive design with smooth animations
 - **Fallback Support**: Browser TTS fallback if Gemini TTS is unavailable
 
@@ -72,8 +73,12 @@ The application will be available at `http://localhost:8000`
 ## Usage
 
 1. Open your browser and go to `http://localhost:8000`
-2. Enter a subject in the text box (e.g., "success", "motivation", "wisdom")
+2. Enter a subject in the text box:
+   - **Topics**: "success", "motivation", "wisdom", "love", "happiness"
+   - **People**: "Einstein", "Churchill", "Steve Jobs", "Maya Angelou", "Nelson Mandela"
 3. Click "Get Quotes" to generate quotes
+   - For topics: Returns quotes about the subject from various people
+   - For people: Returns quotes BY that person (not about them)
 4. Click the "Play" button next to any quote to hear it read aloud
 
 ## Technical Details

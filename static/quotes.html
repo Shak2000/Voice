@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quotes Reading App</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Quotes Reading App</h1>
+            <p>Discover inspiring quotes on any subject and listen to them</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <div class="input-group">
+                    <input 
+                        type="text" 
+                        id="subjectInput" 
+                        placeholder="Enter a subject (e.g., success, motivation, life, wisdom...)"
+                        maxlength="100"
+                    >
+                    <button id="getQuotesBtn" class="primary-btn">
+                        <span class="btn-text">Get Quotes</span>
+                        <span class="btn-loading" style="display: none;">Loading...</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="quotesContainer" class="quotes-container" style="display: none;">
+                <h2 id="quotesTitle"></h2>
+                <div id="quotesList" class="quotes-list"></div>
+            </div>
+
+            <div id="errorMessage" class="error-message" style="display: none;"></div>
+        </main>
+
+        <footer>
+            <p>Powered by Gemini 2.5 Flash Lite & TTS</p>
+        </footer>
+    </div>
+
+    <script src="/static/quotes.js"></script>
+</body>
+</html>

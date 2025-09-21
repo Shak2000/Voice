@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice App - Settings</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Include Navigation Toolbar -->
+    <div id="toolbar-container"></div>
+
+    <div class="container">
+        <header class="settings-header">
+            <h1>⚙️ Settings</h1>
+            <p>Customize your experience with our multi-game app</p>
+        </header>
+
+        <main class="settings-main">
+            <div class="settings-section">
+                <h2>🎤 Voice Settings</h2>
+                <p class="section-description">Choose your preferred voice for text-to-speech features</p>
+                
+                <div class="setting-group">
+                    <label for="voice-select" class="setting-label">
+                        <span class="label-text">Select Voice:</span>
+                        <span class="label-description">Choose from 30 unique Gemini TTS voices (US English)</span>
+                    </label>
+                    <div class="voice-selector">
+                        <select id="voice-select" class="voice-dropdown">
+                            <option value="">Loading voices...</option>
+                        </select>
+                        <button id="test-voice-btn" class="test-btn" disabled>
+                            🔊 Test Voice
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">
+                        <span class="label-text">Voice Preview:</span>
+                    </label>
+                    <div class="voice-preview">
+                        <div id="voice-info" class="voice-info">
+                            <div class="voice-details">
+                                <span class="voice-name">No voice selected</span>
+                                <span class="voice-language">-</span>
+                                <span class="voice-gender">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-actions">
+                    <button id="save-settings-btn" class="primary-btn" disabled>
+                        💾 Save Settings
+                    </button>
+                    <button id="reset-settings-btn" class="secondary-btn">
+                        🔄 Reset to Default
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2>🎮 Game Preferences</h2>
+                <p class="section-description">Configure your gaming experience</p>
+                
+                <div class="setting-group">
+                    <label class="setting-label">
+                        <span class="label-text">Enable Sound Effects:</span>
+                    </label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="sound-effects" checked>
+                        <label for="sound-effects" class="toggle-label"></label>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">
+                        <span class="label-text">Auto-play TTS:</span>
+                        <span class="label-description">Automatically read quotes aloud</span>
+                    </label>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="auto-tts">
+                        <label for="auto-tts" class="toggle-label"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h2>ℹ️ About</h2>
+                <div class="about-info">
+                    <p><strong>Multi-Game App</strong></p>
+                    <p>Powered by Gemini 2.5 Flash & Advanced AI</p>
+                    <p>Version 1.0.0</p>
+                </div>
+            </div>
+
+            <div id="settings-status" class="status-message" style="display: none;"></div>
+        </main>
+
+        <footer class="settings-footer">
+            <p>Your settings are automatically saved to your browser</p>
+        </footer>
+    </div>
+
+    <script src="/static/settings.js"></script>
+</body>
+</html>

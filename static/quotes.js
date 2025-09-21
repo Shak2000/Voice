@@ -7,7 +7,36 @@ class QuotesApp {
         this.quotesList = document.getElementById('quotesList');
         this.errorMessage = document.getElementById('errorMessage');
         
+        this.loadToolbar();
         this.initEventListeners();
+    }
+
+    loadToolbar() {
+        const toolbarContainer = document.getElementById('toolbar-container');
+        if (toolbarContainer) {
+            fetch('/static/index.html')
+                .then(response => response.text())
+                .then(html => {
+                    toolbarContainer.innerHTML = html;
+                    this.highlightCurrentPage();
+                })
+                .catch(error => {
+                    console.error('Error loading toolbar:', error);
+                });
+        }
+    }
+
+    highlightCurrentPage() {
+        // Highlight the current page in the toolbar
+        const currentPath = window.location.pathname;
+        const toolbarLinks = document.querySelectorAll('.toolbar-link');
+        
+        toolbarLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === currentPath) {
+                link.classList.add('active');
+            }
+        });
     }
 
     initEventListeners() {
@@ -114,12 +143,27 @@ class QuotesApp {
     }
 
     async playQuoteAudio(quote) {
+        // Get saved voice setting or use default
+        const savedSettings = localStorage.getItem('appSettings');
+        let voiceId = 'Aoede'; // Default voice
+        if (savedSettings) {
+            try {
+                const settings = JSON.parse(savedSettings);
+                voiceId = settings.voiceId || 'Aoede';
+            } catch (e) {
+                console.error('Error parsing saved settings:', e);
+            }
+        }
+
         const response = await fetch('/api/tts', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ text: quote })
+            body: JSON.stringify({ 
+                text: quote,
+                voice_id: voiceId
+            })
         });
 
         if (!response.ok) {
@@ -141,29 +185,21 @@ class QuotesApp {
     }
 
     playWithBrowserTTS(quote) {
-        // Fallback to browser's built-in TTS
+        // Simplified fallback to browser's built-in TTS (only used if Gemini TTS fails)
         if ('speechSynthesis' in window) {
+            console.log(`Using browser TTS fallback for quote: "${quote.substring(0, 50)}..."`);
+            
             const utterance = new SpeechSynthesisUtterance(quote);
             utterance.rate = 0.9;
             utterance.pitch = 1;
             utterance.volume = 1;
-            
-            // Try to use a pleasant voice
-            const voices = speechSynthesis.getVoices();
-            const preferredVoice = voices.find(voice => 
-                voice.lang.includes('en') && 
-                (voice.name.includes('Google') || voice.name.includes('Microsoft'))
-            );
-            
-            if (preferredVoice) {
-                utterance.voice = preferredVoice;
-            }
             
             speechSynthesis.speak(utterance);
         } else {
             alert('Text-to-speech is not supported in this browser');
         }
     }
+
 
     setPlayButtonLoading(playBtn, isLoading) {
         const playIcon = playBtn.querySelector('.play-icon');
